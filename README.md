@@ -1,4 +1,4 @@
-# NCF Crypto Pipeline
+# Crypto Pipeline
 
 This repository contains a data ingestion pipeline to fetch cryptocurrency market data from Binance and store it in an AWS S3 Data Lake.
 
@@ -11,8 +11,8 @@ This repository contains a data ingestion pipeline to fetch cryptocurrency marke
 
 1. **Clone the repository**:
    ```bash
-   git clone <your-repo-url>
-   cd ncf-crypto-pipeline
+   git clone https://github.com/peteryds/crypto-pipeline.git
+   cd crypto-pipeline
    ```
 
 2. **Install dependencies**:
