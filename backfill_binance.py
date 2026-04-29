@@ -61,13 +61,8 @@ def stream_zip_to_s3(url: str, s3_key: str) -> bool:
                 
             response.raise_for_status()
         
-            # Upload the raw stream directly to S3
-            s3_client.upload_fileobj(
-                response.raw, 
-                BUCKET_NAME, 
-                s3_key,
-                ExtraArgs={'ContentType': 'application/zip'}
-            )
+            # Pass the raw socket stream to storage handler
+            storage.upload_stream(response.raw, s3_key)
             logger.info(f"Successfully uploaded to s3://{BUCKET_NAME}/{s3_key}")
             return True
         
@@ -121,19 +116,13 @@ def backfill_historical_data(symbol: str, start_date_str: str, end_date_str: str
         
     logger.info("Data Ingestion Pipeline Completed Successfully!")
 
-# ==========================================
-# ENTRY POINT
-# ==========================================
-
 if __name__ == "__main__":
-    # Check if BUCKET_NAME is configured
-    if not BUCKET_NAME:
-        logger.error("S3_BUCKET_NAME not found in environment variables. Please check your .env file.")
+    if not storage.check_config():
+        logger.error("S3_BUCKET_NAME not configured.")
         exit(1)
 
-    # Development/PoC Parameters: Adjust these for specific backfill requirements.
     TARGET_SYMBOL = "BTCUSDC"
-    START_DATE = "2026-03-26"
-    END_DATE = "2026-04-27"
+    START_DATE = "2026-02-01"
+    END_DATE = "2026-04-29"
     
     backfill_historical_data(TARGET_SYMBOL, START_DATE, END_DATE)
