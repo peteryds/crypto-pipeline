@@ -13,6 +13,7 @@ import logging
 from datetime import datetime, timedelta
 from io import BytesIO
 from dotenv import load_dotenv
+import storage  # Custom module for S3 interactions
 
 # ==========================================
 # LOGGING CONFIGURATION
@@ -99,7 +100,7 @@ def backfill_historical_data(symbol: str, start_date_str: str, end_date_str: str
         # 1. Process 1-minute Klines (OHLCV)
         # --------------------------------------------------
         kline_url = f"https://data.binance.vision/data/spot/daily/klines/{symbol}/1m/{symbol}-1m-{date_str}.zip"
-        kline_s3_key = f"bronze/binance/klines/symbol={symbol}/year={year}/month={month}/day={day}/data.zip"
+        kline_s3_key = f"landing/binance/klines/symbol={symbol}/year={year}/month={month}/day={day}/data.zip"
         
         stream_zip_to_s3(kline_url, kline_s3_key)
         
@@ -107,7 +108,7 @@ def backfill_historical_data(symbol: str, start_date_str: str, end_date_str: str
         # 2. Process aggTrades (Tick-level aggregated trades)
         # --------------------------------------------------
         agg_url = f"https://data.binance.vision/data/spot/daily/aggTrades/{symbol}/{symbol}-aggTrades-{date_str}.zip"
-        agg_s3_key = f"bronze/binance/aggTrades/symbol={symbol}/year={year}/month={month}/day={day}/data.zip"
+        agg_s3_key = f"landing/binance/aggTrades/symbol={symbol}/year={year}/month={month}/day={day}/data.zip"
         
         stream_zip_to_s3(agg_url, agg_s3_key)
         
