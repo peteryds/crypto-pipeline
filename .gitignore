@@ -4,3 +4,4 @@ __pycache__/
 .DS_Store
 package
 deployment_package.zip
+legacy/
