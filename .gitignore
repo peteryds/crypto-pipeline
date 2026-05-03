@@ -5,3 +5,4 @@ __pycache__/
 package
 deployment_package.zip
 legacy/
+.streamlit/
