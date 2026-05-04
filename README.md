@@ -74,4 +74,4 @@ The model classifies current market micro-structures into one of three optimal e
    streamlit run app.py
    ```
 ## 🤝 Acknowledgments
-Developed as the final project for Applied Machine Learning at New College of Florida.
+Developed as the final project for Distributed Computing Course at New College of Florida.
