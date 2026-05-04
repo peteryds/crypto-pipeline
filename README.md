@@ -69,3 +69,9 @@ The model classifies current market micro-structures into one of three optimal e
    AWS_ACCESS_KEY_ID=your-access-key
    AWS_SECRET_ACCESS_KEY=your-secret-key
    ```
+### Launch the App
+   ```env
+   streamlit run app.py
+   ```
+## 🤝 Acknowledgments
+Developed as the final project for Applied Machine Learning at New College of Florida.
