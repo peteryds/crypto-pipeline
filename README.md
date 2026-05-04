@@ -1,26 +1,68 @@
-# Crypto Pipeline
+# 🚀 Crypto Execution Optimizer: Late Capital Deployment
 
-This repository contains a data ingestion pipeline to fetch cryptocurrency market data from Binance and store it in an AWS S3 Data Lake.
+![Databricks](https://img.shields.io/badge/Databricks-FF3621?style=for-the-badge&logo=Databricks&logoColor=white)
+![PySpark](https://img.shields.io/badge/PySpark-E25A1C?style=for-the-badge&logo=Apache-Spark&logoColor=white)
+![MLflow](https://img.shields.io/badge/MLflow-0194E2?style=for-the-badge&logo=MLflow&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 
-## Architecture
-- **Source**: Binance Public API (Klines/OHLCV)
-- **Destination**: AWS S3 (Bronze Layer)
-- **Partitioning**: Hive-style (`year=YYYY/month=MM/day=DD`) for optimized querying via Athena/Databricks.
+## 📌 Project Overview
+This project presents an **End-to-End MLOps Pipeline** designed to optimize the execution strategy for **Late Capital Deployment** in cryptocurrency momentum trading. 
 
-## Setup
+When a low-frequency momentum signal triggers, but new capital arrives days later, traders face a paradox: executing via market orders risks buying the local top, while placing deep limit orders risks missing the trend entirely. This project solves this by using Machine Learning to predict the optimal **Volatility-Adjusted Pyramid Execution Strategy (ATR-based scaling)** over a 72-hour window.
 
-1. **Clone the repository**:
+## 🏗️ Architecture & Pipeline
+The project follows the **Databricks Medallion Architecture** to process minute-by-minute BTC/USDC data and deploy a real-time REST API.
+
+1. **Data Engineering (PySpark & Delta Lake)**
+   * **Bronze Layer:** Ingestion of raw, unstructured Binance API data.
+   * **Silver Layer:** Cleaned, typed, and partitioned time-series OHLCV data.
+   * **Gold Layer:** Feature engineering (ATR, Moving Average Bias, Volatility) and generation of 72-hour execution cost labels.
+2. **Machine Learning (FLAML & MLflow)**
+   * Utilizes **FLAML (AutoML)** to train an Extra Trees Classifier using chronological time-series splitting to prevent data leakage.
+   * Managed via **MLflow** for experiment tracking, parameter logging, and model registry.
+3. **Model Serving (Databricks Serverless)**
+   * The registered model is deployed as a low-latency REST API with strict Schema Enforcement.
+4. **User Interface (Streamlit)**
+   * A "Sizzling" interactive web dashboard for real-time market simulation and strategy inference.
+
+## 🧠 Execution Strategies (The Labels)
+The model classifies current market micro-structures into one of three optimal execution templates:
+* **Strategy A (Aggressive):** 50% Market Order / 50% Limit Order at 0.5x ATR.
+* **Strategy B (Balanced):** 30% Market Order / 40% Limit Order at 1.5x ATR / 30% at 2.0x ATR.
+* **Strategy C (Passive):** 10% Market Order / 90% Deep Limit Orders (2.0x to 4.0x ATR).
+
+## 🛠️ Technology Stack
+* **Cloud Platform:** Databricks Serverless
+* **Data Processing:** Apache Spark (PySpark), Delta Lake
+* **Machine Learning:** FLAML (AutoML), scikit-learn
+* **MLOps:** MLflow, Databricks Model Registry, Model Serving Endpoints
+* **Web Application:** Streamlit
+
+## 💻 How to Run the Web App (Streamlit)
+
+### Prerequisites
+1. Python 3.9+
+2. A valid Databricks Personal Access Token (PAT)
+3. The deployed Databricks Serving Endpoint URL
+
+### Installation
+1. Clone the repository:
    ```bash
-   git clone https://github.com/peteryds/crypto-pipeline.git
-   cd crypto-pipeline
+   git clone [https://github.com/your-username/crypto-execution-optimizer.git](https://github.com/your-username/crypto-execution-optimizer.git)
+   cd crypto-execution-optimizer
    ```
 
-2. **Install dependencies**:
+2. Install the required packages:
    ```bash
    pip install -r requirements.txt
    ```
+3. Set up your Databricks credentials. Create a .streamlit/secrets.toml file and add:
+   ```bash
+   DATABRICKS_TOKEN = "your-personal-access-token"
+   DATABRICKS_URL = "your-serving-endpoint-url"
+   ```
 
-3. **Environment Variables**:
    Create a `.env` file in the root directory and add your AWS credentials:
    ```env
    S3_BUCKET_NAME=your-bucket-name
