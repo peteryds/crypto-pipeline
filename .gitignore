@@ -6,3 +6,4 @@ package
 deployment_package.zip
 legacy/
 .streamlit/
+ncf-crypto-pipeline.code-workspace
