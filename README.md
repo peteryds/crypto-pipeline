@@ -6,25 +6,27 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 
+**Live Demo:** [Link to Streamlit App](https://crypto-pipeline-azkbkrdaiayjz3exyugwya.streamlit.app/)
+
 ## 📌 Project Overview
 This project presents an **End-to-End MLOps Pipeline** designed to optimize the execution strategy for **Late Capital Deployment** in cryptocurrency momentum trading. 
 
 When a low-frequency momentum signal triggers, but new capital arrives days later, traders face a paradox: executing via market orders risks buying the local top, while placing deep limit orders risks missing the trend entirely. This project solves this by using Machine Learning to predict the optimal **Volatility-Adjusted Pyramid Execution Strategy (ATR-based scaling)** over a 72-hour window.
 
 ## 🏗️ Architecture & Pipeline
-The project follows the **Databricks Medallion Architecture** to process minute-by-minute BTC/USDC data and deploy a real-time REST API.
+Data is ingested from AWS Lambda into Amazon S3 (Landing Zone). Within Databricks, we employ a **Delta Lakehouse Medallion Architecture**:
 
 1. **Data Engineering (PySpark & Delta Lake)**
-   * **Bronze Layer:** Ingestion of raw, unstructured Binance API data.
-   * **Silver Layer:** Cleaned, typed, and partitioned time-series OHLCV data.
-   * **Gold Layer:** Feature engineering (ATR, Moving Average Bias, Volatility) and generation of 72-hour execution cost labels.
+   * **Bronze Layer:** Houses the raw data ingested from S3, ensuring a single source of truth.
+   * **Silver Layer:** Cleansed and standardized data where timestamps are normalized and schema enforcement is applied using PySpark and Delta format.
+   * **Gold Layer:** Aggregated, high-order features optimized for Machine Learning models and analytics.
 2. **Machine Learning (FLAML & MLflow)**
-   * Utilizes **FLAML (AutoML)** to train an Extra Trees Classifier using chronological time-series splitting to prevent data leakage.
-   * Managed via **MLflow** for experiment tracking, parameter logging, and model registry.
+   * Utilizes **FLAML** for automated model training.
+   * Managed via **MLflow** for experiment tracking and model registry.
 3. **Model Serving (Databricks Serverless)**
-   * The registered model is deployed as a low-latency REST API with strict Schema Enforcement.
+   * The final model is deployed via **Databricks Serverless Model Serving**, exposing a REST API.
 4. **User Interface (Streamlit)**
-   * A "Sizzling" interactive web dashboard for real-time market simulation and strategy inference.
+   * The REST API powers a publicly hosted **Streamlit** web application.
 
 ## 🧠 Execution Strategies (The Labels)
 The model classifies current market micro-structures into one of three optimal execution templates:
@@ -34,6 +36,7 @@ The model classifies current market micro-structures into one of three optimal e
 
 ## 🛠️ Technology Stack
 * **Cloud Platform:** Databricks Serverless
+* **Data Ingestion:** AWS Lambda, Amazon S3
 * **Data Processing:** Apache Spark (PySpark), Delta Lake
 * **Machine Learning:** FLAML (AutoML), scikit-learn
 * **MLOps:** MLflow, Databricks Model Registry, Model Serving Endpoints
@@ -49,8 +52,8 @@ The model classifies current market micro-structures into one of three optimal e
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/your-username/crypto-execution-optimizer.git](https://github.com/your-username/crypto-execution-optimizer.git)
-   cd crypto-execution-optimizer
+   git clone https://github.com/peteryds/crypto-pipeline.git
+   cd crypto-pipeline
    ```
 
 2. Install the required packages:
@@ -73,5 +76,20 @@ The model classifies current market micro-structures into one of three optimal e
    ```env
    streamlit run app.py
    ```
+
+## 🧪 Running the Test Script
+
+To verify the Databricks Model Serving endpoint, you can run the provided test script. 
+
+1. Ensure you have the required packages installed:
+   ```bash
+   pip install requests python-dotenv
+   ```
+2. Make sure your `.env` file contains your `DATABRICKS_TOKEN` and `DATABRICKS_URL` as mentioned in the prerequisites.
+3. Execute the script from the root directory:
+   ```bash
+   python test/test_project.py
+   ```
+
 ## 🤝 Acknowledgments
 Developed as the final project for Distributed Computing Course at New College of Florida.
