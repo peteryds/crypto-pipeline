@@ -6,6 +6,8 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 
+**Live Demo:** [Link to Streamlit App](https://crypto-pipeline-azkbkrdaiayjz3exyugwya.streamlit.app/)
+
 ## 📌 Project Overview
 This project presents an **End-to-End MLOps Pipeline** designed to optimize the execution strategy for **Late Capital Deployment** in cryptocurrency momentum trading. 
 
@@ -73,5 +75,20 @@ The model classifies current market micro-structures into one of three optimal e
    ```env
    streamlit run app.py
    ```
+
+## 🧪 Running the Test Script
+
+To verify the Databricks Model Serving endpoint, you can run the provided test script. 
+
+1. Ensure you have the required packages installed:
+   ```bash
+   pip install requests python-dotenv
+   ```
+2. Make sure your `.env` file contains your `DATABRICKS_TOKEN` and `DATABRICKS_URL` as mentioned in the prerequisites.
+3. Execute the script from the root directory:
+   ```bash
+   python test/test_project.py
+   ```
+
 ## 🤝 Acknowledgments
 Developed as the final project for Distributed Computing Course at New College of Florida.
