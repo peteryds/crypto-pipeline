@@ -9,9 +9,11 @@ class TestRealtimeIngestBinance(unittest.TestCase):
     def test_get_previous_minute_window_ms(self):
         now = datetime(2026, 5, 11, 20, 14, 41, tzinfo=timezone.utc)
         start_ms, end_ms = realtime_ingest_binance.get_previous_minute_window_ms(now)
+        expected_start = int(datetime(2026, 5, 11, 20, 13, 0, tzinfo=timezone.utc).timestamp() * 1000)
+        expected_end = int(datetime(2026, 5, 11, 20, 13, 59, 999000, tzinfo=timezone.utc).timestamp() * 1000)
 
-        self.assertEqual(start_ms, 1778530380000)
-        self.assertEqual(end_ms, 1778530439999)
+        self.assertEqual(start_ms, expected_start)
+        self.assertEqual(end_ms, expected_end)
 
     @patch("aws.realtime_ingest_binance.time.sleep")
     @patch("aws.realtime_ingest_binance.requests.get")

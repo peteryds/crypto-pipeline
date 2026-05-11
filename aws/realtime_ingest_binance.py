@@ -7,7 +7,7 @@ import requests
 
 try:
     import ccxt
-except Exception:  # pragma: no cover - fallback for environments without ccxt
+except ImportError:  # pragma: no cover - fallback for environments without ccxt
     ccxt = None
 
 try:
@@ -27,6 +27,7 @@ storage = S3Storage()
 CCXT_SYMBOL = 'BTC/USDC'
 S3_SYMBOL = 'BTCUSDC'
 BINANCE_BASE_URL = "https://api.binance.com"
+MILLIS_PER_MINUTE = 60_000
 
 def init_exchange():
     if ccxt is None:
@@ -66,7 +67,7 @@ def get_previous_minute_window_ms(now: datetime = None):
     current_utc = now or datetime.now(timezone.utc)
     previous_minute = current_utc.replace(second=0, microsecond=0) - timedelta(minutes=1)
     start_ms = int(previous_minute.timestamp() * 1000)
-    end_ms = start_ms + 60_000 - 1
+    end_ms = start_ms + MILLIS_PER_MINUTE - 1
     return start_ms, end_ms
 
 
@@ -78,7 +79,12 @@ def fetch_binance_json(endpoint: str, params: dict, max_retries: int = 3, timeou
 
         if response.status_code in (429, 418):
             retry_after_header = response.headers.get("Retry-After")
-            wait_seconds = int(retry_after_header) if retry_after_header is not None else (2 ** attempt)
+            wait_seconds = 2 ** attempt
+            if retry_after_header is not None:
+                try:
+                    wait_seconds = int(retry_after_header)
+                except (TypeError, ValueError):
+                    logger.warning("Invalid Retry-After header '%s'; using backoff.", retry_after_header)
             logger.warning(
                 "Binance rate limit encountered (status=%s). Retrying in %ss (attempt %s/%s).",
                 response.status_code,
