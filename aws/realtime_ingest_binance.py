@@ -86,15 +86,13 @@ def fetch_binance_json(endpoint: str, params: dict, max_retries: int = 3, timeou
                 attempt + 1,
                 max_retries,
             )
-            if attempt == max_retries - 1:
-                raise Exception(f"Binance rate limit persisted after {max_retries} attempts.")
-            time.sleep(wait_seconds)
-            continue
+            if attempt < max_retries - 1:
+                time.sleep(wait_seconds)
+                continue
+            raise Exception(f"Binance rate limit persisted after {max_retries} attempts.")
 
         response.raise_for_status()
         return response.json()
-
-    raise Exception(f"Failed to fetch Binance endpoint: {endpoint}")
 
 def lambda_handler(event, context):
     """Standard AWS Lambda entry point."""
