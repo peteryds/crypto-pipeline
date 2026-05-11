@@ -27,7 +27,12 @@ storage = S3Storage()
 CCXT_SYMBOL = 'BTC/USDC'
 S3_SYMBOL = 'BTCUSDC'
 BINANCE_BASE_URL = "https://api.binance.com"
-MILLIS_PER_MINUTE = 60_000
+MILLISECONDS_PER_MINUTE = 60_000
+MAX_BACKOFF_SECONDS = 4
+
+
+class RateLimitExceededError(Exception):
+    """Raised when Binance rate limit responses persist after retries."""
 
 def init_exchange():
     if ccxt is None:
@@ -67,7 +72,7 @@ def get_previous_minute_window_ms(now: datetime = None):
     current_utc = now or datetime.now(timezone.utc)
     previous_minute = current_utc.replace(second=0, microsecond=0) - timedelta(minutes=1)
     start_ms = int(previous_minute.timestamp() * 1000)
-    end_ms = start_ms + MILLIS_PER_MINUTE - 1
+    end_ms = start_ms + MILLISECONDS_PER_MINUTE - 1
     return start_ms, end_ms
 
 
@@ -79,7 +84,7 @@ def fetch_binance_json(endpoint: str, params: dict, max_retries: int = 3, timeou
 
         if response.status_code in (429, 418):
             retry_after_header = response.headers.get("Retry-After")
-            wait_seconds = 2 ** attempt
+            wait_seconds = min(2 ** attempt, MAX_BACKOFF_SECONDS)
             if retry_after_header is not None:
                 try:
                     wait_seconds = int(retry_after_header)
@@ -95,7 +100,7 @@ def fetch_binance_json(endpoint: str, params: dict, max_retries: int = 3, timeou
             if attempt < max_retries - 1:
                 time.sleep(wait_seconds)
                 continue
-            raise Exception(f"Binance rate limit persisted after {max_retries} attempts.")
+            raise RateLimitExceededError(f"Binance rate limit persisted after {max_retries} attempts.")
 
         response.raise_for_status()
         return response.json()
