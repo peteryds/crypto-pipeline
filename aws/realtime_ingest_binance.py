@@ -10,8 +10,15 @@ try:
 except Exception:  # pragma: no cover - fallback for environments without ccxt
     ccxt = None
 
-from logger import get_logger
-from aws.storage import S3Storage
+try:
+    from core.logger import get_logger
+except ImportError:  # pragma: no cover
+    from logger import get_logger
+
+try:
+    from core.storage import S3Storage
+except ImportError:  # pragma: no cover
+    from aws.storage import S3Storage
 
 logger = get_logger(__name__)
 storage = S3Storage()
@@ -70,7 +77,8 @@ def fetch_binance_json(endpoint: str, params: dict, max_retries: int = 3, timeou
         response = requests.get(url, params=params, timeout=timeout)
 
         if response.status_code in (429, 418):
-            wait_seconds = int(response.headers.get("Retry-After", 0)) or (2 ** attempt)
+            retry_after_header = response.headers.get("Retry-After")
+            wait_seconds = int(retry_after_header) if retry_after_header is not None else (2 ** attempt)
             logger.warning(
                 "Binance rate limit encountered (status=%s). Retrying in %ss (attempt %s/%s).",
                 response.status_code,
