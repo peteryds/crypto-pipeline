@@ -7,7 +7,7 @@ and retrieves the optimal execution strategy recommendation.
 Quick Start for GitHub Users:
 1. Setup Virtual Environment (Recommended):
    python -m venv venv
-   source venv/bin/activate  # On Windows use: venv\Scripts\activate
+   source venv/bin/activate 
 
 2. Install Required Packages:
    pip install -r requirements.txt
