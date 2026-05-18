@@ -56,11 +56,17 @@ The model classifies current market micro-structures into one of three optimal e
    cd crypto-pipeline
    ```
 
-2. Install the required packages:
+2. Set up a Virtual Environment (Recommended):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows use: venv\Scripts\activate
+   ```
+
+3. Install the required packages:
    ```bash
    pip install -r requirements.txt
    ```
-3. Set up your Databricks credentials. Create a .streamlit/secrets.toml file and add:
+4. Set up your Databricks credentials. Create a .streamlit/secrets.toml file and add:
    ```bash
    DATABRICKS_TOKEN = "your-personal-access-token"
    DATABRICKS_URL = "your-serving-endpoint-url"
