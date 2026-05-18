@@ -4,16 +4,24 @@ Test Script for Crypto Execution Optimizer (Late Capital Deployment)
 Sends a sample market data payload to the Databricks Model Serving endpoint
 and retrieves the optimal execution strategy recommendation.
 
-Requirements: 
-- pip install requests python-dotenv
+Quick Start for GitHub Users:
+1. Setup Virtual Environment (Recommended):
+   python -m venv venv
+   source venv/bin/activate  # On Windows use: venv\Scripts\activate
 
-Environment Setup:
-- Create a '.env' file in the root directory of this project.
-- Add your token to the file: DATABRICKS_TOKEN=your_actual_token_here
+2. Install Required Packages:
+   pip install -r requirements.txt
+
+3. Environment Setup:
+   - Create a '.env' file in the root directory of this project.
+   - Add your endpoint and token to the file: 
+     DATABRICKS_TOKEN=your_actual_token_here
+     DATABRICKS_URL=your_serving_endpoint_url_here
+
 - CRITICAL: Ensure '.env' is added to your '.gitignore' file.
 
 Usage: 
-- python test_project.py
+- python test/test_project.py
 """
 
 import os
@@ -33,9 +41,9 @@ URL = os.environ.get("DATABRICKS_URL")
 # Securely fetch the token from the loaded environment variables
 TOKEN = os.environ.get("DATABRICKS_TOKEN")
 
-if not TOKEN:
-    print("FAIL: DATABRICKS_TOKEN is not set.")
-    print("Please ensure you have a '.env' file with the token defined.")
+if not TOKEN or not URL:
+    print("FAIL: DATABRICKS_TOKEN or DATABRICKS_URL is not set.")
+    print("Please ensure you have a '.env' file with both variables defined.")
     sys.exit(1)
 
 headers = {
